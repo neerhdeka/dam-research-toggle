@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAM Research – Concept 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0C6EFD;--blue-d:#0a5fd8;
+  --border:#E5E7EB;--text:#111827;--muted:#6B7280;--faint:#9CA3AF;
+  --bg:#F9FAFB;--white:#fff;--chip:#F3F4F6;
+  --r:8px;--rs:6px;--shadow:0 4px 16px rgba(0,0,0,.12);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* TASK OVERLAY */
+#taskOverlay{position:fixed;inset:0;background:rgba(8,8,20,.85);z-index:9000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.task-card{background:#fff;border-radius:18px;padding:44px 52px;max-width:520px;width:92%;box-shadow:0 28px 64px rgba(0,0,0,.35);text-align:center}
+.cpill{display:inline-block;background:#EEF2FF;color:#4F46E5;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;letter-spacing:.6px;margin-bottom:22px}
+.task-card h2{font-size:23px;font-weight:700;margin-bottom:10px}
+.task-card>p{font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:6px}
+.task-hl{display:inline-flex;align-items:center;gap:8px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;padding:11px 20px;margin:14px 0 22px;font-size:14px;font-weight:600;color:#92400E}
+.start-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 0;font-size:15px;font-weight:600;cursor:pointer;width:100%;transition:background .15s}
+.start-btn:hover{background:var(--blue-d)}
+.task-note{font-size:11.5px;color:var(--faint);margin-top:14px}
+
+/* SUCCESS OVERLAY */
+#successOverlay{position:fixed;inset:0;background:rgba(8,8,20,.85);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.success-card{background:#fff;border-radius:18px;padding:44px 52px;max-width:480px;width:92%;box-shadow:0 28px 64px rgba(0,0,0,.35);text-align:center}
+.s-icon{font-size:52px;margin-bottom:14px}
+.success-card h2{font-size:22px;font-weight:700;margin-bottom:8px}
+.success-card p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+.stats{display:flex;justify-content:center;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.stat{background:var(--chip);border-radius:12px;padding:14px 22px;min-width:100px}
+.stat-v{font-size:24px;font-weight:700;color:var(--blue)}
+.stat-l{font-size:11px;color:var(--muted);margin-top:3px}
+.close-btn{background:#111827;color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer}
+
+/* TIMER BAR */
+
+
+
+
+
+
+/* RESEARCH PILL */
+.rpill{position:fixed;bottom:16px;right:16px;z-index:8000;background:#1e1b4b;color:#fff;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(30,27,75,.4)}
+.rpill::before{content:'';width:7px;height:7px;background:#a78bfa;border-radius:50%;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+
+/* CHROME */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:16px;position:relative}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.logo svg{width:28px;height:28px}
+.dam-chip{font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);padding:4px 10px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.sbar{flex:1;max-width:560px;position:relative}
+.sbar input{width:100%;height:38px;border:1.5px solid var(--border);border-radius:20px;padding:0 44px 0 40px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;background:var(--white)}
+.sbar input:focus{border-color:var(--blue)}
+.sicon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none}
+.isearch{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--faint);background:var(--chip);border-radius:6px;padding:3px 5px}
+.tr{margin-left:auto;display:flex;align-items:center;gap:12px}
+.avatar{width:32px;height:32px;background:#374151;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600}
+.upbtn{background:var(--blue);color:#fff;border:none;border-radius:var(--rs);padding:0 16px;height:34px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:44px;display:flex;align-items:center}
+nav a{font-size:13.5px;color:var(--muted);text-decoration:none;padding:0 14px;height:44px;display:flex;align-items:center;border-bottom:2px solid transparent;white-space:nowrap}
+nav a.act{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
+.frow{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:44px;display:flex;align-items:center;gap:6px;overflow-x:auto}
+.fpill{border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap;background:var(--white)}
+.fright{margin-left:auto;display:flex;gap:6px;flex-shrink:0}
+.savebtn{background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:500;cursor:pointer}
+
+/* RESULTS BAR */
+.rbar{padding:12px 24px 0;display:flex;align-items:center;gap:12px}
+.cbadge{background:var(--blue);color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600}
+.ctext{font-size:13px;color:var(--muted);font-weight:500}
+.ssort{border:1px solid var(--border);border-radius:var(--rs);padding:4px 10px;font-size:12.5px;background:var(--white);cursor:pointer;outline:none}
+
+/* TABS ROW */
+.tabs-row{padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-top:10px}
+.tabs{display:flex}
+.tab{display:flex;align-items:center;gap:7px;padding:10px 16px;border-bottom:2.5px solid transparent;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;user-select:none}
+.tab:hover{color:var(--text);background:var(--chip)}
+.tab.act{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
+.tc{background:var(--chip);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:600;color:var(--faint)}
+.tab.act .tc{background:#EBF3FF;color:var(--blue)}
+.tbr{display:flex;align-items:center;gap:6px;padding-bottom:2px}
+.ibtn{width:30px;height:30px;border:1px solid var(--border);border-radius:var(--rs);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.ibtn.act{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* EMPTY STATE */
+.empty{padding:80px 24px;text-align:center;color:var(--faint)}
+.empty svg{margin:0 auto 16px;display:block;opacity:.3}
+.empty h3{font-size:16px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.empty p{font-size:13px}
+
+/* GRID */
+.gc{padding:16px 24px 80px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:780px){.grid{grid-template-columns:repeat(2,1fr)}}
+
+.card{background:var(--white);border-radius:var(--r);overflow:hidden;border:1.5px solid var(--border);cursor:pointer;transition:all .18s;position:relative}
+.card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateY(-1px)}
+.card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#E5E7EB}
+.card-body{padding:9px 12px 11px}
+.card-title{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{font-size:11px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fbadge{position:absolute;top:8px;right:8px;background:rgba(17,24,39,.72);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600}
+.chk{position:absolute;top:8px;left:8px;width:18px;height:18px;background:#fff;border:1.5px solid var(--border);border-radius:4px;opacity:0;transition:opacity .15s}
+.card:hover .chk{opacity:1}
+.card.wrong{animation:wf .4s ease}
+@keyframes wf{0%{border-color:#EF4444;background:#FEF2F2}100%{border-color:var(--border);background:var(--white)}}
+</style>
+</head>
+<body>
+
+<!-- TASK OVERLAY -->
+<div id="taskOverlay">
+  <div class="task-card">
+    <div class="cpill">CONCEPT 1 OF 4 &nbsp;·&nbsp; TABS</div>
+    <h2>Find an asset 🔍</h2>
+    <p>You're a marketer looking for a specific photo to use in a campaign. Use the search bar below to find a specific photo.</p>
+    <div class="task-hl">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/></svg>
+      Search for: <em style="font-style:normal;font-weight:700">Woman in a field</em>
+    </div>
+    <p>Type <strong>"Woman in a field"</strong> in the search bar, then click the correct photo when you find it.</p>
+    <button class="start-btn" onclick="startTask()">Start task →</button>
+    <p class="task-note">Your timer starts when you click the search bar.</p>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="successOverlay">
+  <div class="success-card">
+    <div class="s-icon">🎉</div>
+    <h2>You found it!</h2>
+    <p>Thanks! Here's a summary of your session:</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-v" id="sTime">—</div><div class="stat-l">Time to find</div></div>
+      <div class="stat"><div class="stat-v" id="sClicks">—</div><div class="stat-l">Cards clicked</div></div>
+      <div class="stat"><div class="stat-v" id="sScroll">—</div><div class="stat-l">Max scroll %</div></div>
+    </div>
+    <p style="font-size:12px;color:var(--faint)">Your responses have been recorded. You can close this tab now.</p>
+    <button class="close-btn" onclick="document.getElementById('successOverlay').style.display='none'">Close</button>
+  </div>
+</div>
+
+
+<div class="rpill">Concept 1 · Tabs</div>
+
+<!-- TOPBAR -->
+<div class="topbar" id="tb">
+  <div class="logo">
+    <svg viewBox="0 0 32 32" fill="none"><path d="M6 6h8a6 6 0 010 12H6V6z" fill="#0C6EFD"/><path d="M6 18h9a7 7 0 010 14H6V18z" fill="#0C6EFD" opacity=".6"/></svg>
+    DAM
+  </div>
+  <div class="dam-chip">⊞ DAM Platform ▾</div>
+  <div class="sbar">
+    <svg class="sicon" width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="si" type="text" placeholder="Want to search for something?" autocomplete="off">
+    <div class="isearch"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke-width="2" stroke-linecap="round"/></svg></div>
+  </div>
+  <div class="tr"><div class="avatar">N</div><button class="upbtn">↑ Upload media</button></div>
+</div>
+
+<nav>
+  <a href="#">Home</a><a href="#" class="act">Assets</a><a href="#">Studio</a>
+  <a href="#">CX Communities</a><a href="#">People Hub</a><a href="#">Product Roadmap</a>
+</nav>
+
+<div class="frow">
+  <div class="fpill">🌐 Language ▾</div><div class="fpill">📄 Type ▾</div>
+  <div class="fpill">🔖 Pages ▾</div><div class="fpill">≡ Blogs ▾</div>
+  <div class="fpill">🎯 Audience ▾</div><div class="fpill">👥 People ▾</div>
+  <div class="fright"><button class="savebtn">Save filters</button></div>
+</div>
+
+<!-- EMPTY STATE -->
+<div id="empty" class="empty">
+  <svg width="52" height="52" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.5"/><path d="M21 21l-4.35-4.35" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <h3>Search to explore assets</h3>
+  <p>Type in the search bar above to find what you're looking for.</p>
+</div>
+
+<!-- RESULTS -->
+<div id="results" style="display:none">
+  <div class="rbar">
+    <span class="cbadge">48</span>
+    <span class="ctext" id="rcount">results</span>
+    <select class="ssort"><option>Order by relevance</option><option>Order by date added</option><option>Order by name</option></select>
+  </div>
+
+  <div class="tabs-row">
+    <div class="tabs">
+      <div class="tab act" id="tab-all" onclick="switchTab('all',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.5" stroke-linecap="round"/></svg>
+        All <span class="tc">48</span>
+      </div>
+      <div class="tab" id="tab-exact" onclick="switchTab('exact',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.7"><line x1="0" y1="4" x2="24" y2="4" stroke-width="2.5"/><line x1="0" y1="12" x2="24" y2="12" stroke-width="2.5"/><line x1="0" y1="20" x2="24" y2="20" stroke-width="2.5"/></svg>
+        Exact matches <span class="tc">14</span>
+      </div>
+      <div class="tab" id="tab-visual" onclick="switchTab('visual',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.4;stroke-dasharray:4 2"><line x1="0" y1="4" x2="24" y2="4" stroke-width="2.5"/><line x1="0" y1="12" x2="24" y2="12" stroke-width="2.5"/><line x1="0" y1="20" x2="24" y2="20" stroke-width="2.5"/></svg>
+        Visually similar <span class="tc">34</span>
+      </div>
+    </div>
+    <div class="tbr">
+      <button class="ibtn act" id="bgrid" onclick="setView('grid')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+      </button>
+      <button class="ibtn" id="blist" onclick="setView('list')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="gc"><div id="grid" class="grid"></div></div>
+</div>
+
+<script>
+const CONCEPT='concept1-tabs', TARGET_POS=2;
+const TARGET={id:'target',title:'Woman in a field',subtitle:'Golden hour · Outdoor · Portrait',img:'https://images.pexels.com/photos/10679096/pexels-photo-10679096.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',isTarget:true,type:'JPG'};
+const DIST=[
+  {id:'d1',title:'Elegant models on a field',subtitle:'Editorial · Fashion',img:'https://images.pexels.com/photos/10679201/pexels-photo-10679201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d2',title:'Models in autumn field',subtitle:'Fashion · Outdoor',img:'https://images.pexels.com/photos/10679212/pexels-photo-10679212.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d3',title:'People in suits in fall field',subtitle:'Editorial · Group',img:'https://images.pexels.com/photos/10679203/pexels-photo-10679203.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d4',title:'Man with wheat posing',subtitle:'Fashion · Portrait',img:'https://images.pexels.com/photos/10679233/pexels-photo-10679233.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d5',title:'Man with wheat on field',subtitle:'Editorial · Male',img:'https://images.pexels.com/photos/10679207/pexels-photo-10679207.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d6',title:'Person holding a mirror',subtitle:'Conceptual · Field',img:'https://images.pexels.com/photos/10679210/pexels-photo-10679210.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d7',title:'Man in beige suit on wheat field',subtitle:'Fashion · Male',img:'https://images.pexels.com/photos/10679216/pexels-photo-10679216.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d8',title:'Couple cuddle on field',subtitle:'Romance · Outdoor',img:'https://images.pexels.com/photos/10679197/pexels-photo-10679197.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d9',title:'Models on a field',subtitle:'Editorial · Fashion',img:'https://images.pexels.com/photos/10679205/pexels-photo-10679205.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d10',title:'Couple looking at each other',subtitle:'Romance · Portrait',img:'https://images.pexels.com/photos/10679234/pexels-photo-10679234.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d11',title:'Couple holding hands',subtitle:'Romance · Field',img:'https://images.pexels.com/photos/10679209/pexels-photo-10679209.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d12',title:'Person holding hands',subtitle:'Lifestyle · Outdoor',img:'https://images.pexels.com/photos/10679208/pexels-photo-10679208.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d13',title:'Couple holding hands',subtitle:'Romance · Golden hour',img:'https://images.pexels.com/photos/10679181/pexels-photo-10679181.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d14',title:'Couple on a field',subtitle:'Romance · Editorial',img:'https://images.pexels.com/photos/10679166/pexels-photo-10679166.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d15',title:'Models on a field',subtitle:'Fashion · Autumn',img:'https://images.pexels.com/photos/10679160/pexels-photo-10679160.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d16',title:'Models on a field',subtitle:'Fashion · Group',img:'https://images.pexels.com/photos/10679162/pexels-photo-10679162.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d17',title:'Woman in beige on grass field',subtitle:'Fashion · Female',img:'https://images.pexels.com/photos/10679192/pexels-photo-10679192.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d18',title:'Man in beige under the sky',subtitle:'Fashion · Male',img:'https://images.pexels.com/photos/10679164/pexels-photo-10679164.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d19',title:'Woman in beige on brown field',subtitle:'Fashion · Female',img:'https://images.pexels.com/photos/10679179/pexels-photo-10679179.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d20',title:'Woman with umbrella in rye field',subtitle:'Conceptual · Female',img:'https://images.pexels.com/photos/10679096/pexels-photo-10679096.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d21',title:'Woman holding umbrella on grass',subtitle:'Editorial · Female',img:'https://images.pexels.com/photos/10679123/pexels-photo-10679123.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d22',title:'Woman with umbrella in cropland',subtitle:'Conceptual · Outdoor',img:'https://images.pexels.com/photos/10679083/pexels-photo-10679083.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d23',title:'Person covering eyes in rye field',subtitle:'Conceptual · Couple',img:'https://images.pexels.com/photos/10679169/pexels-photo-10679169.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d24',title:'Back view in beige suit on field',subtitle:'Fashion · Silhouette',img:'https://images.pexels.com/photos/10679180/pexels-photo-10679180.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d25',title:'Two figures in the field',subtitle:'Editorial · Couple',img:'https://images.pexels.com/photos/10679201/pexels-photo-10679201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d26',title:'Golden field portrait',subtitle:'Fashion · Golden hour',img:'https://images.pexels.com/photos/10679212/pexels-photo-10679212.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d27',title:'Field editorial shoot',subtitle:'Editorial · Fashion',img:'https://images.pexels.com/photos/10679203/pexels-photo-10679203.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d28',title:'Autumn field models',subtitle:'Fashion · Seasonal',img:'https://images.pexels.com/photos/10679233/pexels-photo-10679233.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d29',title:'Rye field couple',subtitle:'Romance · Rural',img:'https://images.pexels.com/photos/10679207/pexels-photo-10679207.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d30',title:'Field silhouette portrait',subtitle:'Conceptual · Outdoor',img:'https://images.pexels.com/photos/10679210/pexels-photo-10679210.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d31',title:'Models in golden hour',subtitle:'Fashion · Light',img:'https://images.pexels.com/photos/10679216/pexels-photo-10679216.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d32',title:'Wheat field editorial',subtitle:'Editorial · Outdoor',img:'https://images.pexels.com/photos/10679197/pexels-photo-10679197.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d33',title:'Field portrait session',subtitle:'Fashion · Portrait',img:'https://images.pexels.com/photos/10679205/pexels-photo-10679205.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d34',title:'Couple in autumn field',subtitle:'Romance · Autumn',img:'https://images.pexels.com/photos/10679234/pexels-photo-10679234.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d35',title:'Field fashion shoot',subtitle:'Fashion · Editorial',img:'https://images.pexels.com/photos/10679209/pexels-photo-10679209.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d36',title:'Rye field portrait',subtitle:'Editorial · Female',img:'https://images.pexels.com/photos/10679208/pexels-photo-10679208.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d37',title:'Models outdoors autumn',subtitle:'Fashion · Seasonal',img:'https://images.pexels.com/photos/10679181/pexels-photo-10679181.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d38',title:'Field couple portrait',subtitle:'Romance · Golden',img:'https://images.pexels.com/photos/10679166/pexels-photo-10679166.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d39',title:'Outdoor fashion editorial',subtitle:'Fashion · Field',img:'https://images.pexels.com/photos/10679160/pexels-photo-10679160.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d40',title:'Woman in rye field',subtitle:'Editorial · Female',img:'https://images.pexels.com/photos/10679162/pexels-photo-10679162.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d41',title:'Field editorial couple',subtitle:'Fashion · Romance',img:'https://images.pexels.com/photos/10679192/pexels-photo-10679192.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d42',title:'Autumn field shoot',subtitle:'Editorial · Outdoor',img:'https://images.pexels.com/photos/10679164/pexels-photo-10679164.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d43',title:'Golden hour field',subtitle:'Fashion · Light',img:'https://images.pexels.com/photos/10679179/pexels-photo-10679179.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d44',title:'Field portrait golden',subtitle:'Editorial · Portrait',img:'https://images.pexels.com/photos/10679096/pexels-photo-10679096.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d45',title:'Rye field editorial',subtitle:'Fashion · Rural',img:'https://images.pexels.com/photos/10679123/pexels-photo-10679123.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d46',title:'Field fashion portrait',subtitle:'Fashion · Female',img:'https://images.pexels.com/photos/10679083/pexels-photo-10679083.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'},
+  {id:'d47',title:'Models in rye field',subtitle:'Editorial · Group',img:'https://images.pexels.com/photos/10679169/pexels-photo-10679169.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',type:'JPG'}
+];
+function buildAssets(){const a=[...DIST];a.splice(TARGET_POS,0,TARGET);return a.slice(0,48)}
+const ASSETS=buildAssets();
+
+let t0=null,tInt=null,clicks=0,wrongC=0,maxScroll=0,view='grid',tab='all';
+const A={id:CONCEPT,sid:`${CONCEPT}-${Date.now()}`,t:Date.now(),ev:[],
+  log(n,d={}){const e={event:n,concept:this.id,session:this.sid,ts:new Date().toISOString(),ms:Date.now()-this.t,...d};this.ev.push(e);console.log(`%c[C1] ${n}`,'color:#4F46E5;font-weight:bold',e);try{const s=JSON.parse(sessionStorage.getItem('dam_ev')||'[]');s.push(e);sessionStorage.setItem('dam_ev',JSON.stringify(s))}catch(x){}}
+};
+
+const fmt=ms=>{const s=Math.floor(ms/1000);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+
+window.addEventListener('scroll',()=>{const p=Math.round(window.scrollY/Math.max(document.body.scrollHeight-window.innerHeight,1)*100);if(p>maxScroll){maxScroll=p;if(maxScroll>=25&&maxScroll%25===0)A.log('scroll_depth',{pct:maxScroll})}},{passive:true});
+
+function startTask(){document.getElementById('taskOverlay').style.display='none';A.log('task_start')}
+
+const si=document.getElementById('si');
+si.addEventListener('focus',()=>{if(!t0){t0=Date.now();A.log('timer_start')}});
+si.addEventListener('input',e=>{if(e.target.value.length===1)A.log('first_keystroke')});
+si.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.value.trim()){
+    const q=e.target.value.trim();
+    A.log('search',{query:q,words:q.split(/\s+/).length});
+    document.getElementById('empty').style.display='none';
+    document.getElementById('results').style.display='block';
+    document.getElementById('rcount').textContent=`results for "${q}"`;
+    render();
+  }
+});
+
+function switchTab(t,el){tab=t;A.log('tab_click',{tab:t});document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));el.classList.add('act');render()}
+function setView(v){view=v;A.log('view_toggle',{view:v});document.getElementById('bgrid').classList.toggle('act',v==='grid');document.getElementById('blist').classList.toggle('act',v==='list');render()}
+
+function onCard(id,pos,isT){
+  if(!t0)return;
+  clicks++;
+  A.log('card_click',{asset_id:id,position:pos,is_target:isT,click_num:clicks,scroll_pct:maxScroll});
+  if(isT){
+    
+    const elapsed=Date.now()-t0;
+    A.log('task_complete',{time_ms:elapsed,time_sec:Math.round(elapsed/1000),total_clicks:clicks,wrong_clicks:wrongC,max_scroll:maxScroll,target_position:TARGET_POS+1});
+    document.getElementById('sTime').textContent=fmt(elapsed);
+    document.getElementById('sClicks').textContent=clicks;
+    document.getElementById('sScroll').textContent=maxScroll+'%';
+    const o=document.getElementById('successOverlay');o.style.display='flex';
+  } else {
+    wrongC++;
+    A.log('wrong_click',{asset_id:id,position:pos,wrong_num:wrongC});
+    document.querySelectorAll('.card').forEach(c=>{if(c.dataset.id===id){c.classList.add('wrong');setTimeout(()=>c.classList.remove('wrong'),400)}});
+  }
+}
+
+function render(){
+  const el=document.getElementById('grid');
+  el.className='grid';
+  const list=tab==='all'?ASSETS:tab==='exact'?ASSETS.slice(0,14):ASSETS.slice(14,48);
+  el.innerHTML=list.map((a,i)=>`
+    <div class="card" data-id="${a.id}" onclick="onCard('${a.id}',${i+1},${!!a.isTarget})">
+      <img src="${a.img}" loading="lazy" onerror="this.style.background='#ddd'">
+      <span class="fbadge">${a.type}</span>
+      <div class="chk"></div>
+      <div class="card-body"><div class="card-title">${a.title}</div><div class="card-sub">${a.subtitle}</div></div>
+    </div>`).join('');
+}
+
+A.log('session_start',{concept:CONCEPT,target_pos:TARGET_POS+1});
+window.addEventListener('beforeunload',()=>A.log('session_end',{duration_sec:Math.round((Date.now()-A.t)/1000),total_events:A.ev.length}));
+</script>
+</body>
+</html>
