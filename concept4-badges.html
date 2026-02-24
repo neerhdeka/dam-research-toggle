@@ -203,20 +203,6 @@ nav a.act{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
   </div>
 
   <div class="tabs-row">
-    <div class="tabs">
-      <div class="tab act" id="tab-all" onclick="switchTab('all',this)">
-        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.5" stroke-linecap="round"/></svg>
-        All <span class="tc">48</span>
-      </div>
-      <div class="tab" id="tab-exact" onclick="switchTab('exact',this)">
-        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.7"><line x1="0" y1="4" x2="24" y2="4" stroke-width="2.5"/><line x1="0" y1="12" x2="24" y2="12" stroke-width="2.5"/><line x1="0" y1="20" x2="24" y2="20" stroke-width="2.5"/></svg>
-        Exact matches <span class="tc">14</span>
-      </div>
-      <div class="tab" id="tab-visual" onclick="switchTab('visual',this)">
-        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.4;stroke-dasharray:4 2"><line x1="0" y1="4" x2="24" y2="4" stroke-width="2.5"/><line x1="0" y1="12" x2="24" y2="12" stroke-width="2.5"/><line x1="0" y1="20" x2="24" y2="20" stroke-width="2.5"/></svg>
-        Visually similar <span class="tc">34</span>
-      </div>
-    </div>
     <div class="tbr">
       <button class="ibtn act" id="bgrid" onclick="setView('grid')">
         <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
@@ -285,7 +271,7 @@ const DIST=[
 function buildAssets(){const a=[...DIST];a.splice(TARGET_POS,0,TARGET);return a.slice(0,48)}
 const ASSETS=buildAssets();
 
-let t0=null,tInt=null,clicks=0,wrongC=0,maxScroll=0,view='grid',tab='all';
+let t0=null,tInt=null,clicks=0,wrongC=0,maxScroll=0,view='grid';
 const A={id:CONCEPT,sid:`${CONCEPT}-${Date.now()}`,t:Date.now(),ev:[],
   log(n,d={}){const e={event:n,concept:this.id,session:this.sid,ts:new Date().toISOString(),ms:Date.now()-this.t,...d};this.ev.push(e);console.log(`%c[C1] ${n}`,'color:#581c87;font-weight:bold',e);try{const s=JSON.parse(sessionStorage.getItem('dam_ev')||'[]');s.push(e);sessionStorage.setItem('dam_ev',JSON.stringify(s))}catch(x){}}
 };
@@ -310,7 +296,6 @@ si.addEventListener('keydown',e=>{
   }
 });
 
-function switchTab(t,el){tab=t;A.log('tab_click',{tab:t});document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));el.classList.add('act');render()}
 function setView(v){view=v;A.log('view_toggle',{view:v});document.getElementById('bgrid').classList.toggle('act',v==='grid');document.getElementById('blist').classList.toggle('act',v==='list');render()}
 
 function onCard(id,pos,isT){
@@ -349,7 +334,7 @@ function badgeClick(e,id,lbl){e.stopPropagation();A.log('badge_click',{asset_id:
 function render(){
   const el=document.getElementById('grid');
   el.className='grid';
-  const list=tab==='all'?ASSETS:tab==='exact'?ASSETS.slice(0,14):ASSETS.slice(14,48);
+  const list=ASSETS;
   el.innerHTML=list.map((a,i)=>{
     const [bc,bl,btt]=BADGE_TYPES[i%BADGE_TYPES.length];
     return `<div class="card" data-id="${a.id}" onclick="onCard('${a.id}',${i+1},${!!a.isTarget})">
