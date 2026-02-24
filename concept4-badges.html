@@ -1,34 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function (m, a, z, e) {
-  var s, t, u, v;
-  try {
-    t = m.sessionStorage.getItem('maze-us');
-  } catch (err) {}
-
-  if (!t) {
-    t = new Date().getTime();
-    try {
-      m.sessionStorage.setItem('maze-us', t);
-    } catch (err) {}
-  }
-
-  u = document.currentScript || (function () {
-    var w = document.getElementsByTagName('script');
-    return w[w.length - 1];
-  })();
-  v = u && u.nonce;
-
-  s = a.createElement('script');
-  s.src = z + '?apiKey=' + e;
-  s.async = true;
-  if (v) s.setAttribute('nonce', v);
-  a.getElementsByTagName('head')[0].appendChild(s);
-  m.mazeUniversalSnippetApiKey = e;
-})(window, document, 'https://snippet.maze.co/maze-universal-loader.js', 'fd7d885f-c101-4589-b0fc-53e3aff0aecd');
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DAM Research – Concept 4</title>
@@ -129,14 +101,15 @@ nav a.act{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
 @media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:780px){.grid{grid-template-columns:repeat(2,1fr)}}
 
-.card{background:var(--white);border-radius:var(--r);overflow:hidden;border:1.5px solid var(--border);cursor:pointer;transition:all .18s;position:relative}
-.card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateY(-1px)}
+.card{background:var(--white);border-radius:var(--r);overflow:visible;border:1.5px solid var(--border);cursor:pointer;transition:all .18s;position:relative}
+.card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateY(-1px);z-index:100}
+.card-img-wrap{overflow:hidden;border-radius:var(--r) var(--r) 0 0;position:relative}
 .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#E5E7EB}
 .card-body{padding:9px 12px 11px}
 .card-title{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-sub{font-size:11px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fbadge{position:absolute;top:8px;right:8px;background:rgba(17,24,39,.72);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600}
-.chk{position:absolute;top:8px;left:8px;width:18px;height:18px;background:#fff;border:1.5px solid var(--border);border-radius:4px;opacity:0;transition:opacity .15s}
+.card-img-wrap .fbadge{position:absolute;top:8px;right:8px;background:rgba(17,24,39,.72);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600}
+.card-img-wrap .chk{position:absolute;top:8px;left:8px;width:18px;height:18px;background:#fff;border:1.5px solid var(--border);border-radius:4px;opacity:0;transition:opacity .15s}
 .card:hover .chk{opacity:1}
 .card.wrong{animation:wf .4s ease}
 @keyframes wf{0%{border-color:#EF4444;background:#FEF2F2}100%{border-color:var(--border);background:var(--white)}}
@@ -380,9 +353,11 @@ function render(){
   el.innerHTML=list.map((a,i)=>{
     const [bc,bl,btt]=BADGE_TYPES[i%BADGE_TYPES.length];
     return `<div class="card" data-id="${a.id}" onclick="onCard('${a.id}',${i+1},${!!a.isTarget})">
-      <img src="${a.img}" loading="lazy" onerror="this.style.background='#ddd'">
-      <span class="fbadge">${a.type}</span>
-      <div class="chk"></div>
+      <div class="card-img-wrap">
+        <img src="${a.img}" loading="lazy" onerror="this.style.background='#ddd'">
+        <span class="fbadge">${a.type}</span>
+        <div class="chk"></div>
+      </div>
       <div class="card-body">
         <div class="card-title">${a.title}</div>
         <div class="card-sub">${a.subtitle}</div>

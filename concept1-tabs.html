@@ -1,34 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function (m, a, z, e) {
-  var s, t, u, v;
-  try {
-    t = m.sessionStorage.getItem('maze-us');
-  } catch (err) {}
-
-  if (!t) {
-    t = new Date().getTime();
-    try {
-      m.sessionStorage.setItem('maze-us', t);
-    } catch (err) {}
-  }
-
-  u = document.currentScript || (function () {
-    var w = document.getElementsByTagName('script');
-    return w[w.length - 1];
-  })();
-  v = u && u.nonce;
-
-  s = a.createElement('script');
-  s.src = z + '?apiKey=' + e;
-  s.async = true;
-  if (v) s.setAttribute('nonce', v);
-  a.getElementsByTagName('head')[0].appendChild(s);
-  m.mazeUniversalSnippetApiKey = e;
-})(window, document, 'https://snippet.maze.co/maze-universal-loader.js', 'fd7d885f-c101-4589-b0fc-53e3aff0aecd');
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DAM Research – Concept 1</title>
@@ -135,7 +107,6 @@ nav a.act{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
 .card-body{padding:9px 12px 11px}
 .card-title{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-sub{font-size:11px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fbadge{position:absolute;top:8px;right:8px;background:rgba(17,24,39,.72);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600}
 .chk{position:absolute;top:8px;left:8px;width:18px;height:18px;background:#fff;border:1.5px solid var(--border);border-radius:4px;opacity:0;transition:opacity .15s}
 .card:hover .chk{opacity:1}
 .card.wrong{animation:wf .4s ease}
@@ -358,7 +329,6 @@ function render(){
   el.innerHTML=list.map((a,i)=>`
     <div class="card" data-id="${a.id}" onclick="onCard('${a.id}',${i+1},${!!a.isTarget})">
       <img src="${a.img}" loading="lazy" onerror="this.style.background='#ddd'">
-      <span class="fbadge">${a.type}</span>
       <div class="chk"></div>
       <div class="card-body"><div class="card-title">${a.title}</div><div class="card-sub">${a.subtitle}</div></div>
     </div>`).join('');
